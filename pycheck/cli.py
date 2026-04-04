@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 def main() -> None:
-    """Programm core"""
+    """Entry point for the pycheck CLI."""
     path = get_cli_argument() 
     print(f"Analysiere: {path}") # Fürs logging in der Console
 
