@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycheck"
+version = "0.1.0"
+description = "A CLI tool to analyze Python code quality"
+requires-python = ">=3.10"
+
+[project.scripts]
+pycheck = "pycheck.cli:main"
