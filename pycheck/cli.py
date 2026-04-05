@@ -4,10 +4,18 @@ import argparse
 import sys 
 from pathlib import Path
 
+from .analyzer import Analyzer
+
 def main() -> None:
     """Entry point for the pycheck CLI."""
     path = get_cli_argument() 
     print(f"Analysiere: {path}") # Fürs logging in der Console
+
+    analyzer = Analyzer(path) 
+    warnings = analyzer.analyze()
+
+    for warning in warnings: 
+        print(warning) 
 
 
 def get_cli_argument() -> Path: 
