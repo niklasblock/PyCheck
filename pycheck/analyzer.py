@@ -23,9 +23,10 @@ class Analyzer:
         tree = ast.parse(source)
 
         missing_docstrings = self._check_missing_docstrings(tree)
+        too_many_params = self._check_too_many_params(tree)
 
-        #später dann alle warnung wie auch type hints 
-        return missing_docstrings 
+        return missing_docstrings + too_many_params
+          
 
     def _check_missing_docstrings(self, tree: ast.AST) -> list[str]: 
         """Check file for missing docstrings 
@@ -45,4 +46,19 @@ class Analyzer:
 
         return missing_docstrings
 
+    def _check_too_many_params(self, tree: ast.AST) -> list[str]: 
+        """Check file for to many params
+        
+        Returns: 
+            List: Warning str of to many params
+        """
+        too_many_params: list[str] = []
+        for node in ast.walk(tree): 
+            if isinstance(node, ast.FunctionDef): 
+                params = node.args.args # Liste der Parameter 
+                if len(params) > 4: 
+                    too_many_params.append(
+                        f"Zeile {node.lineno}: Funktion '{node.name}' hat {len(params)} Parameter"
+                    )
 
+        return too_many_params 
