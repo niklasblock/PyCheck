@@ -9,13 +9,11 @@ from .analyzer import Analyzer
 def main() -> None:
     """Entry point for the pycheck CLI."""
     path = get_cli_argument() 
-    print(f"Analysiere: {path}") # Fürs logging in der Console
 
     analyzer = Analyzer(path) 
     warnings = analyzer.analyze()
 
-    for warning in warnings: 
-        print(warning) 
+    print_report(path, warnings)
 
 
 def get_cli_argument() -> Path: 
@@ -40,6 +38,16 @@ def get_cli_argument() -> Path:
         sys.exit(1)
 
     return path 
+
+def print_report(path: Path, warnings: list[str]) -> None: 
+    """Print report of all warnings"""
+    print(f"Analysiere: {path}\n") # Fürs logging in der Console
+    if warnings: 
+        print(f"⚠ {len(warnings)} Problem(e) gefunden: ")
+        for warning in warnings: 
+            print(f"  {warning}") 
+    else: 
+        print("✓ Keine Probleme gefunden.")
 
 if __name__ == "__main__": 
     main()
