@@ -24,8 +24,9 @@ class Analyzer:
 
         missing_docstrings = self._check_missing_docstrings(tree)
         too_many_params = self._check_too_many_params(tree)
+        too_long_functions = self._check_function_too_long(tree)
 
-        return missing_docstrings + too_many_params
+        return missing_docstrings + too_many_params + too_long_functions
           
 
     def _check_missing_docstrings(self, tree: ast.AST) -> list[str]: 
@@ -63,3 +64,20 @@ class Analyzer:
                     )
 
         return too_many_params 
+
+    def _check_function_too_long(self, tree: ast.AST) -> list[str]: 
+        """Check file for to long functions
+        
+        Returns: 
+            List: Warning str of to long functions 
+        """
+        function_too_long: list[str] = []
+        for node in ast.walk(tree): 
+            if isinstance(node, ast.FunctionDef): 
+                length = node.end_lineno - node.lineno 
+                if length > 20: 
+                    function_too_long.append(
+                        f"Zeile {node.lineno}: Funktion '{node.name}' ist zu lang ({length} Zeilen, max. 20)"
+                    )
+        
+        return function_too_long

@@ -107,3 +107,35 @@ def test_permitted_params():
 
     assert len(warnings) == 0 
     assert warnings == []
+
+def test_too_long_function(): 
+    """function with  25 lines
+        -> one warning 
+    """
+
+    body = "\n".join(["    x = 1"] * 25)
+    source = f"def foo():\n{body}"
+
+    tree = ast.parse(source)
+    analyzer = Analyzer(Path("dummy.py"))
+
+    warnings = analyzer._check_function_too_long(tree)
+
+    assert len(warnings) == 1 
+    assert "foo" in warnings[0]
+
+def test_permitted_long_function():
+    """function with 10 lines
+        -> no warning
+    """
+
+    body = "\n".join(["    x = 1"] * 10)
+    source = f"def foo():\n{body}"
+
+    tree = ast.parse(source)
+    analyzer = Analyzer(Path("dummy.py"))
+
+    warnings = analyzer._check_function_too_long(tree)
+
+    assert len(warnings) == 0  
+    assert warnings == []
