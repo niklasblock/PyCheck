@@ -56,9 +56,10 @@ class Analyzer:
         for node in ast.walk(tree): 
             if isinstance(node, ast.FunctionDef): 
                 params = node.args.args # Liste der Parameter 
-                if len(params) > 4: 
+                filtered_params = [x for x in params if x.arg != "self"] # Liste der Parameter ohne self
+                if len(filtered_params) > 4: 
                     too_many_params.append(
-                        f"Zeile {node.lineno}: Funktion '{node.name}' hat {len(params)} Parameter"
+                        f"Zeile {node.lineno}: Funktion '{node.name}' hat {len(filtered_params)} Parameter"
                     )
 
         return too_many_params 
