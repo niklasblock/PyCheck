@@ -10,12 +10,15 @@ def main() -> None:
     """Entry point for the pycheck CLI."""
     paths = get_cli_argument() 
     
+    results: dict[Path, list[str]] = {}
+
     for path in paths: 
         analyzer = Analyzer(path) 
-        warnings = analyzer.analyze()
+        results[path] = analyzer.analyze()
 
-        print_report(path, warnings)
+        print_report(path, results[path])
 
+    print_summary(results)
 
 def get_cli_argument() -> list[Path]: 
     """Parse and validate the CLI file argument.
@@ -61,6 +64,27 @@ def print_report(path: Path, warnings: list[str]) -> None:
         print("✓ Keine Probleme gefunden.")
     
     print("-" * 40)
+
+
+def print_summary(results: dict[Path, list[str]]) -> None: 
+    """Print summary of all reports with every warning of each file/path"""
+    print("=" * 40)
+    print("ZUSAMMENFASSUNG")
+    print("=" * 40)
+    
+    count_warnings = 0
+    for path, warnings in results.items():
+        # print(item) 
+        if warnings:
+            count = len(warnings)
+            count_warnings += count
+            label = "Probleme" if count > 1 else "Problem"
+            print(f"⚠ {path} ({count} {label})")
+        else: 
+            print(f"✓ {path} ")
+
+    print(f"\n {len(results)} Datei(en) analysiert - {count_warnings} Problem(e) gefunden.")
+    print("="*40)
 
 if __name__ == "__main__": 
     main()
