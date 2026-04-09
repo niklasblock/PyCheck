@@ -8,36 +8,47 @@ from .analyzer import Analyzer
 
 def main() -> None:
     """Entry point for the pycheck CLI."""
-    path = get_cli_argument() 
+    paths = get_cli_argument() 
+    
+    for path in paths: 
+        analyzer = Analyzer(path) 
+        warnings = analyzer.analyze()
 
-    analyzer = Analyzer(path) 
-    warnings = analyzer.analyze()
-
-    print_report(path, warnings)
+        print_report(path, warnings)
 
 
-def get_cli_argument() -> Path: 
+def get_cli_argument() -> list[Path]: 
     """Parse and validate the CLI file argument.
     
     Returns:
-        Path: validated .py file path
+        Paths: validated List of .py file paths
     
     Exits:
         1: if file does not exist or is not a .py file
     """
     parser = argparse.ArgumentParser(description="Analysiert Python-Dateien")
-    parser.add_argument("file", help="Die zu analysierende Python-Datei")
-    args = parser.parse_args() # Argument einlesen
-    path = Path(args.file) # Zugriff auf den Wert und diesen zu einenm Pfad machen 
-    if not path.exists(): 
-        print("Kein gültiger Pfad", file=sys.stderr)
+    parser.add_argument("files", nargs="+", help="Die zu analysierende Python-Datei")
+    args = parser.parse_args() # Argumente einlesen
+    
+    paths = []
+    for file in args.files: 
+        path = Path(file)
+        if not path.exists():
+            print(f"Kein gültiger Pfad: {path}", file=sys.stderr)
+            sys.exit(1) 
+
+        if path.suffix != ".py": 
+            print(f"Der Pfad ist keine .py Datei: {path}", file=sys.stderr)
+            sys.exit(1)
+        
+        paths.append(path)
+
+    if len(paths) == 0: 
+        print("Es wurde kein gültiges Programm gefunden! Programm beendet!", file=sys.stderr)
         sys.exit(1)
 
-    if path.suffix != ".py": 
-        print("Der Pfad ist keinen .py Datei!", file=sys.stderr)
-        sys.exit(1)
-
-    return path 
+    return paths 
+ 
 
 def print_report(path: Path, warnings: list[str]) -> None: 
     """Print report of all warnings"""
@@ -48,6 +59,8 @@ def print_report(path: Path, warnings: list[str]) -> None:
             print(f"  {warning}") 
     else: 
         print("✓ Keine Probleme gefunden.")
+    
+    print("-" * 40)
 
 if __name__ == "__main__": 
     main()
