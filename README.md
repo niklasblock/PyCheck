@@ -21,6 +21,8 @@ pycheck src/*.py
 - Functions without docstrings
 - Functions with more than 4 parameters
 - Functions longer than 20 lines
+- Lines longer than 79 characters
+- Bare except blocks without eception type
 
 ## Development
 

@@ -161,6 +161,7 @@ def test_sytax_error():
     assert len(warnings) == 1
     assert "SyntaxError" in warnings[0]
 
+# --- Too long lines
 def test_too_long_line(): 
     """line with 95 characters
         -> one warning
@@ -184,4 +185,45 @@ def test_permitted_long_line():
     warnings = analyzer._check_line_too_long(source) 
     
     assert len(warnings) == 0 
+    assert warnings == []
+
+# --- Empty except block
+def test_empty_except_block():
+    """line with empty except block
+        -> one warning
+    """
+    source =  textwrap.dedent('''
+    try: 
+        print()
+    except: 
+        print()
+    finally: 
+        print() 
+    ''')
+    tree = ast.parse(source)
+    analyzer = Analyzer(Path("dummy.py"))
+
+    warnings = analyzer._check_empty_except_blocks(tree)
+
+    assert len(warnings) == 1 
+    assert "Except block without type" in warnings[0]
+
+def test_except_block_with_Exception(): 
+    """line with Excpetion in except block
+        -> no warning
+    """
+    source =  textwrap.dedent('''
+    try: 
+        print()
+    except Exception: 
+        print()
+    finally: 
+        print() 
+    ''')
+    tree = ast.parse(source)
+    analyzer = Analyzer(Path("dummy.py"))
+
+    warnings = analyzer._check_empty_except_blocks(tree)
+
+    assert len(warnings) == 0
     assert warnings == []

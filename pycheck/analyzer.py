@@ -30,8 +30,13 @@ class Analyzer:
         too_many_params = self._check_too_many_params(tree)
         too_long_functions = self._check_function_too_long(tree)
         too_long_lines = self._check_line_too_long(source)
+        empty_except_blocks = self._check_empty_except_blocks(tree)
 
-        return missing_docstrings + too_many_params + too_long_functions + too_long_lines
+        return (missing_docstrings + 
+                too_many_params + 
+                too_long_functions + 
+                too_long_lines+
+                empty_except_blocks)
           
 
     def _check_missing_docstrings(self, tree: ast.AST) -> list[str]: 
@@ -103,3 +108,19 @@ class Analyzer:
                 )
 
         return lines_too_long
+    
+    def _check_empty_except_blocks(self, tree: ast.AST) -> list[str]: 
+        """Check try except block for empty except_blocks
+        
+        Returns: 
+            List: Warning str of empty except blocks
+        """
+        empty_except_blocks: list[str] = []
+        for node in ast.walk(tree): 
+            if isinstance(node, ast.ExceptHandler): 
+                if node.type == None: 
+                    empty_except_blocks.append(
+                        f"Zeile {node.lineno}: Except block without type"
+                    )
+
+        return empty_except_blocks
