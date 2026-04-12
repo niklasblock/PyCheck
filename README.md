@@ -29,3 +29,10 @@ pycheck src/*.py
 ```bash
 pytest tests/
 ```
+
+## Roadmap
+- [ ] Check for single-letter variable names
+- [ ] Check for magic numbers
+- [ ] Analyze multiple files with glob pattern
+- [ ] JSON output format
+- [ ] GitHub Actions for automated testing
