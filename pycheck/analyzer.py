@@ -29,8 +29,9 @@ class Analyzer:
         missing_docstrings = self._check_missing_docstrings(tree)
         too_many_params = self._check_too_many_params(tree)
         too_long_functions = self._check_function_too_long(tree)
+        too_long_lines = self._check_line_too_long(source)
 
-        return missing_docstrings + too_many_params + too_long_functions
+        return missing_docstrings + too_many_params + too_long_functions + too_long_lines
           
 
     def _check_missing_docstrings(self, tree: ast.AST) -> list[str]: 
@@ -85,3 +86,20 @@ class Analyzer:
                     )
         
         return function_too_long
+    
+    def _check_line_too_long(self, source: str) -> list[str]: 
+        """Check line for too many charaters
+
+        Returns: 
+            List: Warning str of too long lines
+        """
+        lines = source.splitlines() 
+        
+        lines_too_long: list[str] = []
+        for i, line in enumerate(lines):
+            if len(line) > 79: 
+                lines_too_long.append(
+                    f"Zeile {i + 1}: Zeile zu lang ({len(line)} Zeichen, max 79)"
+                )
+
+        return lines_too_long

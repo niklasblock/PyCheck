@@ -160,3 +160,28 @@ def test_sytax_error():
 
     assert len(warnings) == 1
     assert "SyntaxError" in warnings[0]
+
+def test_too_long_line(): 
+    """line with 95 characters
+        -> one warning
+    """
+    source = f"# {"c" *93}"
+
+    analyzer = Analyzer(Path("dummy.py"))
+
+    warnings = analyzer._check_line_too_long(source) 
+    
+    assert len(warnings) == 1 
+    assert "Zeile zu lang" in warnings[0]
+
+def test_permitted_long_line():
+    """line with 40 characters
+        -> no warning
+    """
+    source = f"# {"c" *38}"
+    analyzer = Analyzer(Path("dummy.py"))
+
+    warnings = analyzer._check_line_too_long(source) 
+    
+    assert len(warnings) == 0 
+    assert warnings == []
