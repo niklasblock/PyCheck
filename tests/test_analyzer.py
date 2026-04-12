@@ -5,6 +5,8 @@ from pycheck.analyzer import Analyzer
 from pathlib import Path 
 import pytest
 import textwrap
+import tempfile
+import os 
 
 # --- Missing Docstrings 
 def test_missing_docstring(): 
@@ -108,6 +110,7 @@ def test_permitted_params():
     assert len(warnings) == 0 
     assert warnings == []
 
+# --- Too long function
 def test_too_long_function(): 
     """function with  25 lines
         -> one warning 
@@ -139,3 +142,21 @@ def test_permitted_long_function():
 
     assert len(warnings) == 0  
     assert warnings == []
+
+# --- Syntax Error in file
+def test_sytax_error(): 
+    """Tempfile with SyntaxError
+        -> one warning
+    """
+    with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False) as f:
+        f.write("def foo(:\n    pass\n")
+        tmp_path = Path(f.name)
+    
+    try:
+        analyzer = Analyzer(tmp_path)
+        warnings = analyzer.analyze()
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+    assert len(warnings) == 1
+    assert "SyntaxError" in warnings[0]

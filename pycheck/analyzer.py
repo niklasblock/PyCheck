@@ -2,6 +2,7 @@
 
 import ast 
 from pathlib import Path
+import sys
 
 class Analyzer: 
 
@@ -20,7 +21,10 @@ class Analyzer:
             List: Warning str of missing docstrings
         """
         source = self.path.read_text() 
-        tree = ast.parse(source)
+        try: 
+            tree = ast.parse(source)
+        except SyntaxError as e: 
+            return [f"SyntaxError - Zeile {e.lineno}: {e.msg}"]
 
         missing_docstrings = self._check_missing_docstrings(tree)
         too_many_params = self._check_too_many_params(tree)
